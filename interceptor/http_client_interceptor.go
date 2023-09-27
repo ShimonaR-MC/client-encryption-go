@@ -9,6 +9,7 @@ import (
 	"github.com/mastercard/client-encryption-go/utils"
 	"io"
 	"net/http"
+	"fmt"
 )
 
 // The httpClientInterceptor is the composition of http.RoundTripper and jwe.JWEConfig
@@ -60,6 +61,7 @@ func (h *httpClientInterceptor) ModifyRequest(req *http.Request) *http.Request {
 
 // ModifyResponse decrypts incoming responses using JWE decryption
 func (h *httpClientInterceptor) ModifyResponse(resp *http.Response) *http.Response {
+	fmt.Println(resp.Body)
 	encryptedPayload := utils.ParseReader(resp.Body)
 	decryptedPayload := encryption.DecryptPayload(encryptedPayload, h.JWEConfig)
 	resp.Body = io.NopCloser(bytes.NewReader([]byte(decryptedPayload)))
